@@ -1,21 +1,25 @@
-png(file ="plot1.png")
-## Open PNG device; create 'plot.png' in my working directory
-## Create plot and send to a file (no plot appears on screen)
+library(lubridate)
+## Read in full data. Set date and time as character for date/time
+## manipulation later. Remaining variables are set as numeric.
+data <- read.table("household_power_consumption.txt",
+header = TRUE, sep = ";", na.strings = "?",
+colClasses = c("character", "character",
+"numeric", "numeric", "numeric",
+"numeric", "numeric", "numeric",
+"numeric"))
+## Insert a new date & time variable for plotting later
+data$Date <- dmy(data$Date)
+data$Time <- hms(data$Time)
+dataplot <- subset(data, Date == ymd("2007-02-01") |
+Date == ymd("2007-02-02"))
+dataplot$datetime <- dataplot$Date + dataplot$Time
 
-## Read the data and subset
-
-EPC <- read.table("household_power_consumption.txt", sep=";", header=TRUE)
-EPCS <- subset(EPC,Date == "1/2/2007" | Date == "1/1/2007" )
-
-## coerce the column to numeric
-EPCS$Global_active_power <- as.numeric(EPCS$Global_active_power)
+## Open PNG graphics device
+png(filename = "plot1.png", width = 480, height = 480,units = "px")
 
 
-hist(EPCS$Global_active_power,main ="Global Active Power", xlab = "Global Active Power(kilowatts)")
+hist(dataplot$Global_active_power,main ="Global Active Power", xlab = "Global Active Power(kilowatts)",col = "red")
 
-
-
-## Annotate plot; still nothing on screen
+## Close graphics device
 dev.off()
-## Close the PNG file device
-## Now you can view the file 'myplot.pdf' on your computer
+
